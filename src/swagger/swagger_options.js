@@ -5,7 +5,7 @@ export default {
             title: "swagger of OTIL APIs",
             version: "1.0",
         },
-        servers: [{ url: "http://localhost:2006/" }, { url: "http://178.128.243.52:2006/" }],
+        servers: [{ url: "http://localhost:1009/" }, { url: "http://178.128.243.52:1009/" }],
     },
     apis: ["./src/swagger/UI/*.js"],
 };

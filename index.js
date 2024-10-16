@@ -20,5 +20,5 @@ if (process.env.NODE_ENV !== "production") app.use("/api-docs", swaggerUi.serve,
 
 app.use("/", router);
 app.listen(process.env.PORT, () => {
-    console.log(`Ilova ishga tushdi: http://localhost:${process.env.PORT || 2006}`);
+    console.log(`Ilova ishga tushdi: http://localhost:${process.env.PORT || 1009}`);
 });

@@ -7,12 +7,6 @@ export default function envfunction(path = "./") {
         case "production":
             alfa = "production";
             break;
-        case "staging":
-            alfa = "staging";
-            break;
-        case "test":
-            alfa = "test";
-            break;
         case "development":
             alfa = "development";
             break;
@@ -20,7 +14,7 @@ export default function envfunction(path = "./") {
             alfa = "development";
             break;
         default:
-            alfa = "";
+            alfa = "development";
             console.log("Bunday env-module mavjud emas");
     }
 
