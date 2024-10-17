@@ -6,8 +6,8 @@ export function up(knex) {
     return knex.schema
         .createTable("profile", function (table) {
             table.increments("id").primary();
-            table.string("first_name").notNullable();
-            table.string("last_name").notNullable();
+            table.string("first_name");
+            table.string("last_name");
             table.string("email");
             table.string("phone");
             table.date("created_date").defaultTo(knex.fn.now()).notNullable();
@@ -16,19 +16,19 @@ export function up(knex) {
             table.increments("id").primary();
             table.integer("profile_id").notNullable();
             table.foreign("profile_id").references("id").inTable("profile");
-            table.string("login").notNullable().unique();
-            table.string("password").notNullable();
+            table.string("login").unique();
+            table.string("password");
             table.string("status").defaultTo("active").notNullable();
             table.date("created_date").defaultTo(knex.fn.now()).notNullable();
         })
         .createTable("person", function (table) {
             table.increments("id").primary();
-            table.string("name").notNullable();
+            table.string("name");
             table.integer("supervisor").notNullable();
             table.foreign("supervisor").references("id").inTable("profile");
             table.integer("created_by").notNullable();
             table.foreign("created_by").references("id").inTable("profile");
-            table.boolean("private").defaultTo(false).notNullable();
+            table.boolean("personal").defaultTo(false).notNullable();
             table.date("created_date").defaultTo(knex.fn.now()).notNullable();
             table.string("status").defaultTo("active").notNullable();
         })

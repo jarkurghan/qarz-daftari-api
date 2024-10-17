@@ -11,8 +11,8 @@ export function up(knex) {
         })
         .createTable("provider", function (table) {
             table.increments("id").primary();
-            table.string("name").notNullable();
-            // table.integer("supervisor").notNullable();
+            table.string("name");
+            // table.integer("supervisor");
             // table.foreign("supervisor").references("id").inTable("profile");
             table.integer("person_id").notNullable();
             table.foreign("person_id").references("id").inTable("person");
@@ -33,7 +33,7 @@ export function up(knex) {
         })
         .createTable("debt", function (table) {
             table.increments("id").primary();
-            table.float("amount").notNullable();
+            table.float("amount");
             table.string("folder").defaultTo("/").notNullable();
             table.integer("provider_id").notNullable();
             table.foreign("provider_id").references("id").inTable("provider");
@@ -45,7 +45,7 @@ export function up(knex) {
             table.increments("id").primary();
             table.integer("debt_id").notNullable();
             table.foreign("debt_id").references("id").inTable("debt");
-            table.float("amount").notNullable();
+            table.float("amount");
             table.text("comment");
             table.integer("created_by").notNullable();
             table.foreign("created_by").references("id").inTable("profile");
