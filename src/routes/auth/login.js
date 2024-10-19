@@ -28,5 +28,4 @@ const login = async (req, res) => {
     }
 };
 
-const _login = login;
-export { _login as login };
+export { login };
