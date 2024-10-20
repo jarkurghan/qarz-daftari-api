@@ -6,41 +6,15 @@ export function up(knex) {
     return knex.schema
         .createTable("profile", function (table) {
             table.increments("id").primary();
+            table.string("user_id").unique().notNullable();
+            table.string("login").unique();
+            table.string("password");
             table.string("first_name");
             table.string("last_name");
             table.string("email");
             table.string("phone");
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
-        })
-        .createTable("account", function (table) {
-            table.increments("id").primary();
-            table.integer("profile_id").notNullable();
-            table.foreign("profile_id").references("id").inTable("profile");
-            table.string("login").unique();
-            table.string("password");
             table.string("status").defaultTo("active").notNullable();
             table.date("created_date").defaultTo(knex.fn.now()).notNullable();
-        })
-        .createTable("person", function (table) {
-            table.increments("id").primary();
-            table.string("name");
-            table.integer("supervisor").notNullable();
-            table.foreign("supervisor").references("id").inTable("profile");
-            table.integer("created_by").notNullable();
-            table.foreign("created_by").references("id").inTable("profile");
-            table.boolean("personal").defaultTo(false).notNullable();
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
-            table.string("status").defaultTo("active").notNullable();
-        })
-        .createTable("person_profile", function (table) {
-            table.increments("id").primary();
-            table.integer("profile_id").notNullable();
-            table.foreign("profile_id").references("id").inTable("profile");
-            table.integer("person_id").notNullable();
-            table.foreign("person_id").references("id").inTable("person");
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
-            table.date("updated_date");
-            table.enu("status", ["0", "1"]).defaultTo("1").notNullable();
         });
 }
 
@@ -49,5 +23,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTable("person_profile").dropTable("person").dropTable("account").dropTable("profile");
+    return knex.schema.dropTable("profile");
 }
