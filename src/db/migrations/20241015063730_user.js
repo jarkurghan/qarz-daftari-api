@@ -15,7 +15,7 @@ export function up(knex) {
             table.string("email");
             table.string("phone");
             table.string("status").defaultTo("active").notNullable();
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
+            table.datetime("created_date").defaultTo(knex.fn.now()).notNullable();
         });
 }
 

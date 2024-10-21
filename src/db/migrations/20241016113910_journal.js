@@ -46,8 +46,8 @@ export function up(knex) {
             table.foreign("journal_id").references("id").inTable("journal");
             table.integer("access_id").notNullable();
             table.foreign("access_id").references("id").inTable("journal_access");
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
-            table.date("updated_date");
+            table.datetime("created_date").defaultTo(knex.fn.now()).notNullable();
+            table.datetime("updated_date");
             table.enu("status", ["0", "1"]).defaultTo("1").notNullable();
         });
 }

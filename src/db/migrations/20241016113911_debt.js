@@ -18,7 +18,7 @@ export function up(knex) {
             table.enu("status", ["0", "1"]).defaultTo("1").notNullable();
             table.integer("created_by").notNullable();
             table.foreign("created_by").references("id").inTable("profile");
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
+            table.datetime("created_date").defaultTo(knex.fn.now()).notNullable();
         })
         .createTable("debt_item", function (table) {
             table.increments("id").primary();
@@ -28,7 +28,7 @@ export function up(knex) {
             table.text("comment");
             table.integer("created_by").notNullable();
             table.foreign("created_by").references("id").inTable("profile");
-            table.date("created_date").defaultTo(knex.fn.now()).notNullable();
+            table.datetime("created_date").defaultTo(knex.fn.now()).notNullable();
         });
 }
 
