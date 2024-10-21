@@ -1,7 +1,7 @@
 // Update with your config settings.
-import { resolve } from "path";
-import { config } from "dotenv";
-config({ path: resolve("../../.env") });
+import env from "./../environment/_env_module.js";
+env("../../");
+env();
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }

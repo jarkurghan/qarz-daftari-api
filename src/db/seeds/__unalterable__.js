@@ -4,5 +4,5 @@
  */
 
 export async function seed(knex) {
-    await knex("provider_access").insert([{ name: "write" }, { name: "delete" }]);
+    await knex("journal_access").insert([{ name: "write" }, { name: "delete" }]);
 }

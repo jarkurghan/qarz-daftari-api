@@ -11,10 +11,7 @@ export default async (req, res, next) => {
         if (!obj.user_id && !obj.exp) return res.status(401).json("invalid token");
 
         const { user_id } = obj;
-        const user = await knex("profile")
-            .leftJoin("account", "account.profile_id", "profile.id")
-            .where({ status: "active" }).andWhere({ user_id })
-            .first();
+        const user = await knex("profile").where({ status: "active" }).andWhere({ user_id }).first();
         if (!user) {
             // bu yerda error batafsil ko'rib chiqiladi
             return res.status(401).json("user not found");

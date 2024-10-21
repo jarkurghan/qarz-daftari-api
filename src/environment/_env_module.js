@@ -1,5 +1,7 @@
 import { resolve } from "path";
 import { config } from "dotenv";
+config({ path: resolve("../../.env") });
+config({ path: resolve("./.env") });
 
 export default function envfunction(path = "./") {
     let alfa;

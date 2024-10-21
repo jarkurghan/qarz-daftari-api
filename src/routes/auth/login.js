@@ -44,7 +44,7 @@ const login = async (req, res) => {
 const relogin = async (req, res) => {
     try {
         const userID = getUserID(req);
-        const user = await knex("users").where({ user_id: userID }).first();
+        const user = await knex("profile").where({ user_id: userID }).first();
         const journals = await knex("journal_profile_access as access")
             .leftJoin("journal", "access.journal_id", "journal.id")
             .distinct("access.profile_id", "access.journal_id")
