@@ -19,21 +19,24 @@ const login = async (req, res) => {
             .where({ "access.profile_id": user.id, status: "1" })
             .select("journal.*");
 
-        const promises = journals.map((journal) => new Promise(async (resolve, reject) => {
-            try {
-                const accesses = await knex("journal_profile_access as access")
-                    .leftJoin("journal_access", "access.access_id", "journal_access.id")
-                    .where({ journal_id: journal.id, status: "1" })
-                    .select("journal_access.name")
-                journal.accesses = accesses.map(e => e.name);
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        }))
+        const promises = journals.map(
+            (journal) =>
+                new Promise(async (resolve, reject) => {
+                    try {
+                        const accesses = await knex("journal_profile_access as access")
+                            .leftJoin("journal_access", "access.access_id", "journal_access.id")
+                            .where({ journal_id: journal.id, status: "1" })
+                            .select("journal_access.name");
+                        journal.accesses = accesses.map((e) => e.name);
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                })
+        );
         await Promise.all(promises);
 
-        const data = { token: generate_token(user.id), journals };
+        const data = { token: generate_token(userID), journals };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);
@@ -51,21 +54,24 @@ const relogin = async (req, res) => {
             .where({ "access.profile_id": user.id, status: "1" })
             .select("journal.*");
 
-        const promises = journals.map((journal) => new Promise(async (resolve, reject) => {
-            try {
-                const accesses = await knex("journal_profile_access as access")
-                    .leftJoin("journal_access", "access.access_id", "journal_access.id")
-                    .where({ journal_id: journal.id, status: "1" })
-                    .select("journal_access.name")
-                journal.accesses = accesses.map(e => e.name);
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        }))
+        const promises = journals.map(
+            (journal) =>
+                new Promise(async (resolve, reject) => {
+                    try {
+                        const accesses = await knex("journal_profile_access as access")
+                            .leftJoin("journal_access", "access.access_id", "journal_access.id")
+                            .where({ journal_id: journal.id, status: "1" })
+                            .select("journal_access.name");
+                        journal.accesses = accesses.map((e) => e.name);
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                })
+        );
         await Promise.all(promises);
 
-        const data = { token: generate_token(user.id), journals };
+        const data = { token: generate_token(userID), journals };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);

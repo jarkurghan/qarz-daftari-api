@@ -32,6 +32,8 @@ const signup = async (req, res) => {
         );
         await Promise.all(promises);
 
+        console.log(user);
+        
         const data = { token: generate_token(user[0].user_id), journals };
         await res.status(200).json(data);
     } catch (error) {
@@ -56,7 +58,7 @@ const createAccount = async (req, res) => {
         });
 
         journal[0].accesses = allAccess.map((e) => e.name);
-        const data = { token: generate_token(profile[0].user_id), journals: journal[0] };
+        const data = { token: generate_token(userID), journals: journal[0] };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);
