@@ -33,8 +33,8 @@ const signup = async (req, res) => {
         await Promise.all(promises);
 
         console.log(user);
-        
-        const data = { token: generate_token(user[0].user_id), journals };
+
+        const data = { token: generate_token(user[0].user_id), journals, authenticatedUser: true };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);
@@ -48,7 +48,7 @@ const createAccount = async (req, res) => {
         const allAccess = await knex("journal_access");
         let profile;
         let journal;
-
+        // 192.168.1.11
         await knex.transaction(async (trx) => {
             profile = await knex("profile").insert({ user_id: userID }).returning("*").transacting(trx);
             const data = { name: "Qarz daftari", supervisor: profile[0].id, created_by: profile[0].id, private: true };
@@ -58,7 +58,7 @@ const createAccount = async (req, res) => {
         });
 
         journal[0].accesses = allAccess.map((e) => e.name);
-        const data = { token: generate_token(userID), journals: journal[0] };
+        const data = { token: generate_token(userID), journals: journal, authenticatedUser: false };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);

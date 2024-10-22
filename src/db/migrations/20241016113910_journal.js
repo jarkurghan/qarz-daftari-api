@@ -57,8 +57,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTable("journal_profile_access")
-        .dropTable("journal_value")
-        .dropTable("journal")
-        .dropTable("journal_access");
+    return knex.schema.dropTable("journal_profile_access").dropTable("journal_value").dropTable("journal").dropTable("journal_access");
 }

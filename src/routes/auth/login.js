@@ -36,7 +36,7 @@ const login = async (req, res) => {
         );
         await Promise.all(promises);
 
-        const data = { token: generate_token(userID), journals };
+        const data = { token: generate_token(userID), journals, authenticatedUser: true };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);
@@ -71,7 +71,7 @@ const relogin = async (req, res) => {
         );
         await Promise.all(promises);
 
-        const data = { token: generate_token(userID), journals };
+        const data = { token: generate_token(userID), journals, authenticatedUser: Boolean(user.login) };
         await res.status(200).json(data);
     } catch (error) {
         console.log(error);
