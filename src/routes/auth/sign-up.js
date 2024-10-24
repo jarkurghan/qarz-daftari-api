@@ -54,6 +54,7 @@ const createAccount = async (req, res) => {
             const data = { name: "Qarz daftari", supervisor: profile[0].id, created_by: profile[0].id, private: true };
             journal = await knex("journal").insert(data).returning("*").transacting(trx);
             const data2 = allAccess.map((e) => ({ access_id: e.id, profile_id: profile[0].id, journal_id: journal[0].id }));
+            await knex("journal_value").insert({ journal_id: journal[0].id }).transacting(trx);
             await knex("journal_profile_access").insert(data2).transacting(trx);
         });
 
