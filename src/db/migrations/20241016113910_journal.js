@@ -25,6 +25,7 @@ export function up(knex) {
             table.integer("journal_id").notNullable();
             table.foreign("journal_id").references("id").inTable("journal");
             table.boolean("folderable").defaultTo(false).notNullable();
+            table.boolean("home_folder_valid").defaultTo(true).notNullable();
             table.string("debt_type_default").defaultTo("mendan qarz").notNullable();
             table.boolean("debt_type_required").defaultTo(false).notNullable();
             table.string("amount_type").defaultTo("float").notNullable();
