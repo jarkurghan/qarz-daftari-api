@@ -1,3 +1,4 @@
+import Joi from "joi";
 import knex from "../../db/db.js";
 import getUserID from "../../services/get-user-id.js";
 
@@ -15,7 +16,7 @@ const getDebt = async (req, res) => {
             .first();
         if (!access) res.status(404).json("journal not found");
 
-        const data = await knex("debt").where({ journal_id }).first();
+        const data = await knex("debt").where({ journal_id });
 
         await res.status(200).json(data);
     } catch (error) {
@@ -34,6 +35,7 @@ const createDebt = async (req, res) => {
             .where({ "access.journal_id": journal_id })
             .andWhere({ "profile.user_id": userID })
             .andWhere({ "access.status": "1" })
+            .select("profile.*")
             // .andWhere({ "access.status": "1", }) aynan shu access
             .first();
         if (!access) res.status(404).json("journal not found");
@@ -43,50 +45,49 @@ const createDebt = async (req, res) => {
         //------------------------------------------------------------
         const value = await knex("journal_value").where({ journal_id }).first();
 
-        const schema = Joi.object({ name: Joi.string().required().messages({ "string.empty": "Nom kiriting!" }) });
-        if (value.folderable) schema = schema.append({ folder: Joi.string().optional() });
-        if (value.debt_type_required)
-            schema = schema.append({ debt_type: Joi.string().required().messages({ "string.empty": "Qaytarish vaqtini kiriting!" }) });
-        else schema = schema.append({ debt_type: Joi.string().optional() });
+        const schema = { name: Joi.string().required().messages({ "string.empty": "Nom kiriting!" }), journal_id: Joi.required() };
+        if (value.folderable) schema.folder = Joi.string().optional();
+        if (value.debt_type_required) schema.debt_type = Joi.string().required().messages({ "string.empty": "Qaytarish vaqtini kiriting!" });
+        else schema.debt_type = Joi.string().optional();
         if (value.debt_type_default) value.debt_type = value.debt_type_default;
-        if (value.amount_type === "float") {
-            if (value.amount_required)
-                schema = schema.append({
-                    amount: Joi.number().greater(0).required().messages({
-                        "number.base": "Bu son bo'lishi kerak",
-                        "number.greater": "Qarz miqdori noto'g'ri",
-                        "any.required": "Qarz miqdorini kiriting!",
-                        // 'string.base': 'Ism matn bo\'lishi kerak.',
-                        // 'string.empty': 'Ism kiriting.',
-                        // 'string.min': 'Ism kamida 3 ta belgidan iborat bo\'lishi kerak.',
-                        // 'string.max': 'Ism 30 tadan oshmasligi kerak.',
-                        // 'any.required': 'Ism majburiy maydon.'
-                    }),
+        if (value.amount_type === "float")
+            if (value.amount_required) {
+                schema.amount = Joi.number().greater(0).required().messages({
+                    "number.base": "Bu son bo'lishi kerak",
+                    "number.greater": "Qarz miqdori noto'g'ri",
+                    "any.required": "Qarz miqdorini kiriting!",
+                    // 'string.base': 'Ism matn bo\'lishi kerak.',
+                    // 'string.empty': 'Ism kiriting.',
+                    // 'string.min': 'Ism kamida 3 ta belgidan iborat bo\'lishi kerak.',
+                    // 'string.max': 'Ism 30 tadan oshmasligi kerak.',
+                    // 'any.required': 'Ism majburiy maydon.'
                 });
-            else schema = schema.append({ amount: Joi.string().optional().messages({ "string.base": "Bu son bo'lishi kerak" }) });
-        } else if (value.amount_type === "string") {
-            if (value.amount_required) schema = schema.append({ amount: Joi.number().required().messages({ "any.required": "Qarzni kiriting!" }) });
-            else schema = schema.append({ amount: Joi.string().optional() });
-        }
-        if (value.date_required) schema = schema.append({ date: Joi.string().required().messages({ "string.empty": "Qaytarish vaqtini kiriting!" }) });
-        else schema = schema.append({ date: Joi.string().optional() });
-        if (value.addressable) {
-            if (value.address_required) schema = schema.append({ address: Joi.string().required().messages({ "string.empty": "Manzil kiriting!" }) });
-            else schema = schema.append({ address: Joi.string().optional() });
-        }
-        if (value.phonable) {
-            if (value.phone_required) schema = schema.append({ phone: Joi.string().required().messages({ "string.empty": "Telefon raqam kiriting!" }) });
-            else schema = schema.append({ phone: Joi.string().optional() });
-        }
+            } else schema.amount = Joi.string().optional().messages({ "string.base": "Bu son bo'lishi kerak" });
+        else if (value.amount_type === "string")
+            if (value.amount_required) schema.amount = Joi.number().required().messages({ "any.required": "Qarzni kiriting!" });
+            else schema.amount = Joi.string().optional();
+        if (value.date_required) schema.date = Joi.string().required().messages({ "string.empty": "Qaytarish vaqtini kiriting!" });
+        else schema.date = Joi.string().optional();
+        if (value.addressable)
+            if (value.address_required) schema.address = Joi.string().required().messages({ "string.empty": "Manzil kiriting!" });
+            else schema.address = Joi.string().optional();
+        if (value.phonable)
+            if (value.phone_required) schema.phone = Joi.string().required().messages({ "string.empty": "Telefon raqam kiriting!" });
+            else schema.phone = Joi.string().optional();
 
-        const { error } = schema.validate(req.body);
-        if (error) return res.status(400).json(error.details[0].message);
+        const { error } = Joi.object(schema).validate(req.body);
+        if (error) return res.status(400).json({ error: error.details[0].message });
 
+        //------------------------------------------------------------
+        //   action
+        //------------------------------------------------------------
+        const data = req.body;
+        req.body.created_by = access.id;
         await knex("debt").insert(req.body);
         res.status(200).json(data);
     } catch (error) {
         console.log(error);
-        res.status(500).json("an error occurred");
+        res.status(500).json({ error: "an error occurred" });
     }
 };
 
