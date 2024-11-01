@@ -43,3 +43,33 @@
  *                                        type: object
  *                                        example: [{"code": "code_num_1", "message": "an error occurred" }]
  */
+
+/**
+ * @swagger
+ * /qd/v1/api/journal/debt:
+ *   post:
+ *       summary: create debt
+ *       tags: [debt]
+ *       security:
+ *            - token: []
+ *       requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          example: {"name": "Abdulla bozor 100-do'kon", "amount": "2 karobka qalam"}
+ *       responses:
+ *            200:
+ *                description: success
+ *                content:
+ *                    application/json:
+ *                         schema:
+ *                              type: string
+ *            400:
+ *                description: error
+ *                content:
+ *                    application/json:
+ *                         schema:
+ *                              type: string
+ */
