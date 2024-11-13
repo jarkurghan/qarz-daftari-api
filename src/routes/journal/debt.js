@@ -2,7 +2,7 @@ import Joi from "joi";
 import knex from "../../db/db.js";
 import getUserID from "../../services/get-user-id.js";
 
-const getDebt = async (req, res) => {
+export const getDebt = async (req, res) => {
     try {
         const { journal_id } = req.params;
         const userID = getUserID(req);
@@ -25,7 +25,7 @@ const getDebt = async (req, res) => {
     }
 };
 
-const createDebt = async (req, res) => {
+export const createDebt = async (req, res) => {
     try {
         const userID = getUserID(req);
         const { journal_id } = req.body;
@@ -83,7 +83,12 @@ const createDebt = async (req, res) => {
         //------------------------------------------------------------
         const data = req.body;
         req.body.created_by = access.id;
-        await knex("debt").insert(req.body);
+
+        await knex.transaction(async (trx) => {
+            const debt = await knex("debt").insert(req.body).returning("*").transacting(trx);
+            const debt_item = { debt_id: debt[0].id, created_by: access.id, amount: data.amount, comment: data.comment };
+            await knex("debt_item").insert(debt_item).transacting(trx);
+        });
         res.status(200).json(data);
     } catch (error) {
         console.log(error);
@@ -91,4 +96,27 @@ const createDebt = async (req, res) => {
     }
 };
 
-export { getDebt, createDebt };
+export const getDebtItem = async (req, res) => {
+    try {
+        const { debt_id } = req.params;
+        const userID = getUserID(req);
+
+        const access = await knex("journal_profile_access as access")
+            .leftJoin("profile", "access.profile_id", "profile.id")
+            .leftJoin("debt", "debt.journal_id", "access.journal_id")
+            .where({ "debt.id": debt_id })
+            .andWhere({ "profile.user_id": userID })
+            .andWhere({ "access.status": "1" })
+            // .andWhere({ "access.status": "1", }) aynan shu access
+            .first();
+        if (!access) res.status(404).json("journal not found");
+
+        const data = await knex("debt").where({ id: debt_id });
+        data.items = await knex("debt_item").where({ debt_id });
+
+        await res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("an error occurred");
+    }
+};
