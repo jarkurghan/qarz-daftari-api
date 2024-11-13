@@ -82,7 +82,7 @@ export const createDebt = async (req, res) => {
         //   action
         //------------------------------------------------------------
         const data = req.body;
-        req.body.created_by = access.id;
+        data.created_by = access.id;
 
         await knex.transaction(async (trx) => {
             const debt = await knex("debt").insert(req.body).returning("*").transacting(trx);
@@ -118,5 +118,43 @@ export const getDebtItem = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json("an error occurred");
+    }
+};
+
+export const createDebtItem = async (req, res) => {
+    try {
+        const userID = getUserID(req);
+        const { debt_id } = req.body;
+
+        const access = await knex("journal_profile_access as access")
+            .leftJoin("profile", "access.profile_id", "profile.id")
+            .leftJoin("debt", "debt.journal_id", "access.journal_id")
+            .where({ "debt.id": debt_id })
+            .andWhere({ "profile.user_id": userID })
+            .andWhere({ "access.status": "1" })
+            // .andWhere({ "access.status": "1", }) aynan shu access
+            .select(["profile.*", "access.journal_id"])
+            .first();
+        if (!access) res.status(404).json("journal not found");
+
+        //------------------------------------------------------------
+        //   validation
+        //------------------------------------------------------------
+        const { journal_id } = access;
+        const value = await knex("journal_value").where({ journal_id }).first();
+
+        // to-do: validation
+
+        //------------------------------------------------------------
+        //   action
+        //------------------------------------------------------------
+        const data = req.body;
+        data.created_by = access.id;
+
+        await knex("debt_item").insert(data).transacting(trx);
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "an error occurred" });
     }
 };
